@@ -8,4 +8,21 @@ $(document).ready(function() {
         $('#quote').text(response.contents.quotes[0].quote);
         $('#source').text(response.contents.quotes[0].author);
     })
+
+    //API call for Joke of the Day
+    getJoke();
+
+        function getJoke() {
+            var queryURL = "https://api.jokes.one/jod";
+            $.ajax({
+            //$.getJSON({
+                url: queryURL,
+                method: "GET"
+            })
+            .then(function(response) {
+                console.log(response.contents.jokes[0].joke.text);
+                $("#joke").text(response.contents.jokes[0].joke.text);
+            });
+        };
 })
+
