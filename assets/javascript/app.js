@@ -1,4 +1,43 @@
 $(document).ready(function() {
+    //Global Variables
+    var studentName = '';
+    var behavior = '';
+
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyBI7PADfav8k7OjpKxN2Otow5smDRuyMNI",
+        authDomain: "behavioral-tracking.firebaseapp.com",
+        databaseURL: "https://behavioral-tracking.firebaseio.com",
+        projectId: "behavioral-tracking",
+        storageBucket: "behavioral-tracking.appspot.com",
+        messagingSenderId: "758368700182"
+    };
+    firebase.initializeApp(config);
+
+    //Set database reference
+    var database = firebase.database();
+
+    //Add student and behavior to Firebase DB
+    $('#addStudent').on('click tap', function(event) {
+        event.preventDefault();
+
+        //Capture values for student name and behavior
+        studentName = $('#studentName').val().trim();
+        behavior = $('#goal1').val().trim();
+
+        //Validate Inputs
+        
+        //Check that student name is not already in database
+        //if not in database, initialize student and goal 1
+        //if so, ask if the user wants to create an additional goal
+
+        console.log(studentName, behavior);
+
+        //Add new student to database
+        database.ref(studentName).push({
+            behavior
+        });
+    })
 
     //API call to They Said So for inspirational quote of the day
     $.ajax({
