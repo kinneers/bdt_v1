@@ -141,4 +141,22 @@ $(document).ready(function() {
         });
     };
     getJoke();
+
+    //API call for Farm Sense- uses UNIX timestamp
+    function getMoon() {
+        //FarmSense API - uses UNIX timestamp
+        var unixTime = moment().unix();
+        var queryURL = "http://api.farmsense.net/v1/moonphases/?d=" + unixTime;
+        console.log("queryURL: " + queryURL);
+        $.ajax({
+            url: queryURL,
+            method: "GET"
+        })
+        .then(function(response) {
+            console.log("getMoon response: " + response);
+            var moonArray = JSON.parse(response);
+            console.log(moonArray[0].Phase);
+        });
+    };
+    getMoon();
 })
