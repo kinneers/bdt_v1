@@ -1,0 +1,10 @@
+@import url('https://fonts.googleapis.com/css?family=Charm');
+
+#quote,
+#source {
+    font-family: 'Charm', cursive;
+}
+
+#source {
+    text-align: center; 
+}
