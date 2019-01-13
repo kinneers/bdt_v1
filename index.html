@@ -31,7 +31,7 @@
             </div>
             <br>
             <div id="carousel-heading" class="text-center">
-                <h2>Student Progress</h2>
+                <h2>Student Progress Monitoring</h2>
             </div>
             <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
                 <ol class="carousel-indicators">
@@ -72,9 +72,9 @@
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th scope="col">Student</th>
-                            <th scope="col">Goal</th>
-                            <th scope="col">Current Percentage</th>
+                            <th class="w-25" scope="col">Student</th>
+                            <th class="w-50" scope="col">Goal</th>
+                            <th class="w-25" scope="col">Current Percentage</th>
                         </tr>
                     </thead>
                     <tbody id="well">
@@ -127,30 +127,30 @@
     <div class="modal" tabindex="-1" role="dialog" id="behavModal">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Behavioral Data Input</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <!--<p>Modal body text goes here.</p> -->
-                <label id="bhvrStudentName">Student Name</label>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <label class="input-group-text" for="bhvrSelect" id="bhvrDisplay">Behavior Goal</label>
-                    </div>
-                    <select class="custom-select" id="bhvrSelect">
-                        <option selected>Choose...</option>
-                        <option value="1">Met</option>
-                        <option value="0">Did Not Meet</option>
-                        <option value="null">N/A</option>
-                    </select>                   
+                <div class="modal-header">
+                    <h5 class="modal-title">Behavioral Data Input</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="bhvrSaveBtn">Save changes</button>
-            </div>
+                <div class="modal-body">
+                    <!--<p>Modal body text goes here.</p> -->
+                    <label id="bhvrStudentName">Student Name</label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="bhvrSelect" id="bhvrDisplay">Behavior Goal</label>
+                        </div>
+                        <select class="custom-select" id="bhvrSelect">
+                            <option selected>Choose...</option>
+                            <option value="1">Met</option>
+                            <option value="0">Did Not Meet</option>
+                            <option value="null">N/A</option>
+                        </select>                   
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="bhvrSaveBtn">Save changes</button>
+                </div>
             </div>
         </div>
     </div>
@@ -158,25 +158,21 @@
       <!-- error response modal -->
     <div class="modal fade" id="errModal">
         <div class="modal-dialog">
-          <div class="modal-content">
-          
-            <!-- Modal Header -->
-            <div class="modal-header">
-              <h4 class="modal-title">Warning</h4>
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Warning</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    Invalid Data Entered
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
             </div>
-            
-            <!-- Modal body -->
-            <div class="modal-body">
-              Invalid Data Entered
-            </div>
-            
-            <!-- Modal footer -->
-            <div class="modal-footer">
-              <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-            </div>
-            
-          </div>
         </div>
     </div>
 
@@ -190,6 +186,7 @@
         <br><div class="small-font">Joke of the Day provided by <a href="https://jokes.one">Jokes One</a>.</div>
     </div>
 
+    <!-- Scripts required for various functionality (jquery is purposely loaded twice because one contains bootstrap functionality and the other ajax functionality- if either is deleted the other functionality breaks) -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
@@ -198,6 +195,5 @@
     <script src="https://cdn.jsdelivr.net/npm/moment@2.23.0/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
     <script src="assets/javascript/app.js"></script>
-
 </body>
 </html>
