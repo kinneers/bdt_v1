@@ -8,3 +8,12 @@
 #source {
     text-align: center; 
 }
+
+.media-body {
+    padding-top: 10px;
+}
+
+.small-font {
+    font-size: 10px;
+    
+}
