@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css?family=Charm');
 
+#bhvrStudentName {
+    font-weight: bolder
+}
+
 #quote,
 #source {
     font-family: 'Charm', cursive;
