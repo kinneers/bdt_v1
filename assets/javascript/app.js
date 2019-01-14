@@ -2,6 +2,7 @@ $(document).ready(function() {
     //Global Variables
     var studentName = '';
     var behavior = '';
+    var errMessage = "";
 
     // Initialize Firebase
     var config = {
@@ -52,18 +53,28 @@ $(document).ready(function() {
 //WE NEED TO MAKE THIS A MODAL AT SOME POINT
             /*If student already has 3 goals present message.*/
             else if ((studentName !== '') && (behavior !== '') && (quicksnapshot.child(studentName).exists()) && (quicksnapshot.child(studentName).val().numBehaviors === 3)) {
-                console.log("Research shows that focusing intensively on a few behavioral goals is most effective.  Therefore, our system only allows support for 3 goals at any given time.");
+                errMessage = "Research shows that focusing intensively on a few behavioral goals is most effective.  Therefore, our system only allows support for 3 goals at any given time.";
+                console.log(errMessage);
             }
             else {
                 //Future: create modal to prompt user to enter data
-                console.log("Error");
+                errMessage = "No Student Data Entered";
+                console.log(errMessage);
             }
-        });        
+        }); 
+
+        // error checking
+        if (errMessage !== "") {
+            $('#warnModalText').text(errMessage);
+            $('#errModal').modal();
+            errMessage = "";
+        };
         //Clear form fields
         $('#studentName').val('');
         $('#goal').val('');
     }) 
     
+
     // Firebase watcher + initial loader for "Today's Progress"
     database.ref().on("child_added", function(snapshot) {
         //Appends current values to the page
