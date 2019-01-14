@@ -19,5 +19,35 @@
 
 .small-font {
     font-size: 10px;
-    
+}
+
+/* Sets the max height and width of charts in carousel */
+.carousel-inner {
+    max-width: 400px !important;
+    max-height: 400px !important;
+}
+
+/* Changes the styling of the carousel arrow icons so that they will be visible */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  height: 100px;
+  width: 100px;
+  outline: black;
+  background-size: 100%, 100%;
+  border-radius: 50%;
+  border: 1px solid black;
+  background-image: none;
+}
+
+.carousel-control-next-icon:after
+{
+  content: '>';
+  font-size: 55px;
+  color: black;
+}
+
+.carousel-control-prev-icon:after {
+  content: '<';
+  font-size: 55px;
+  color: black;
 }

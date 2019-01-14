@@ -72,7 +72,7 @@ $(document).ready(function() {
         //Clear form fields
         $('#studentName').val('');
         $('#goal').val('');
-    })
+    }) 
     
 
     // Firebase watcher + initial loader for "Today's Progress"
@@ -92,7 +92,7 @@ $(document).ready(function() {
                 <div class="input-group mb-3">
                 <div class="input-group-prepend">
                 <label class="input-group-text" for="bhvrSelect"
-                id="bhvrDisplay">${snapshot.val().behavior1}</label></div>
+                id="${snapshot.val().behavior1}">${snapshot.val().behavior1}</label></div>
                 <select class="custom-select" id="bhvrSelect">
                 <option selected>Choose...</option>
                 <option value="1">Met</option>
@@ -119,7 +119,7 @@ $(document).ready(function() {
                 <div class="input-group mb-3">
                 <div class="input-group-prepend">
                 <label class="input-group-text" for="bhvrSelect"
-                id="bhvrDisplay">${snapshot.val().behavior1}</label></div>
+                id="${snapshot.val().behavior1}">${snapshot.val().behavior1}</label></div>
                 <select class="custom-select" id="bhvrSelect">
                 <option selected>Choose...</option>
                 <option value="1">Met</option>
@@ -128,7 +128,7 @@ $(document).ready(function() {
                 <div class="input-group mb-3">
                 <div class="input-group-prepend">
                 <label class="input-group-text" for="bhvrSelect"
-                id="bhvrDisplay">${snapshot.val().behavior2}</label></div>
+                id="${snapshot.val().behavior2}">${snapshot.val().behavior2}</label></div>
                 <select class="custom-select" id="bhvrSelect">
                 <option selected>Choose...</option>
                 <option value="1">Met</option>
@@ -160,7 +160,7 @@ $(document).ready(function() {
                 <div class="input-group mb-3">
                 <div class="input-group-prepend">
                 <label class="input-group-text" for="bhvrSelect"
-                id="bhvrDisplay">${snapshot.val().behavior1}</label></div>
+                id="${snapshot.val().behavior1}">${snapshot.val().behavior1}</label></div>
                 <select class="custom-select" id="bhvrSelect">
                 <option selected>Choose...</option>
                 <option value="1">Met</option>
@@ -169,7 +169,7 @@ $(document).ready(function() {
                 <div class="input-group mb-3">
                 <div class="input-group-prepend">
                 <label class="input-group-text" for="bhvrSelect"
-                id="bhvrDisplay">${snapshot.val().behavior2}</label></div>
+                id="${snapshot.val().behavior2}">${snapshot.val().behavior2}</label></div>
                 <select class="custom-select" id="bhvrSelect">
                 <option selected>Choose...</option>
                 <option value="1">Met</option>
@@ -178,7 +178,7 @@ $(document).ready(function() {
                 <div class="input-group mb-3">
                 <div class="input-group-prepend">
                 <label class="input-group-text" for="bhvrSelect"
-                id="bhvrDisplay">${snapshot.val().behavior3}</label></div>
+                id="${snapshot.val().behavior3}">${snapshot.val().behavior3}</label></div>
                 <select class="custom-select" id="bhvrSelect">
                 <option selected>Choose...</option>
                 <option value="1">Met</option>
@@ -233,4 +233,65 @@ $(document).ready(function() {
         });
     };
     getMoon();
+
+    //Database listener for the charts for a particular student
+    database.ref("Silly Sarah").on('value', function(snapshot) {
+         createChart(snapshot, 1);
+    })
+
+    function createChart(snapshot, bxNum) {
+        //Determines which behavior is being graphed and assigns the requested object to a variable for easier manipulation
+        if (bxNum === 1) {
+            var b1Object = snapshot.val().b1data;
+        }
+        else if (bxNum === 2) {
+            var b1Object = snapshot.val().b2data;
+        }
+        else {
+            var b1Object = snapshot.val().b2data; 
+        }
+
+    //Get the keys of the object and store them in an array
+    var keysb1 = [];
+    for(var key in b1Object) {
+        if(b1Object.hasOwnProperty(key)) { //to be safe
+            keysb1.push(key);
+        }
+    }
+
+    //Get the values of the object and store them in an array
+    var valuesb1 = [];
+    valuesb1 = Object.values(b1Object);
+    
+    //Create chart for behavior 1
+    var ctx = document.getElementById("myChart1");
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: keysb1,
+            datasets: [{
+                label: snapshot.key + ': % of day for: ' + snapshot.val().behavior1,
+                data: valuesb1,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero:true,
+                        max: 100
+                    }
+                }]
+            }
+        }
+        });
+    }
+
 })
