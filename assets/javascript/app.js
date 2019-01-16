@@ -3,6 +3,16 @@ $(document).ready(function() {
     var studentName = '';
     var behavior = '';
     var errMessage = "";
+    var studentArray = [];
+    var bxArrayLinkedtoStudent = [];
+    var bxArray = [];
+    var met;
+    var tracked;
+
+
+
+    console.log(studentArray);
+    console.log(bxArray);
 
     // Initialize Firebase
     var config = {
@@ -50,7 +60,6 @@ $(document).ready(function() {
                     numBehaviors: 3
                 });
             }
-//WE NEED TO MAKE THIS A MODAL AT SOME POINT
             /*If student already has 3 goals present message.*/
             else if ((studentName !== '') && (behavior !== '') && (quicksnapshot.child(studentName).exists()) && (quicksnapshot.child(studentName).val().numBehaviors === 3)) {
                 errMessage = "Research shows that focusing intensively on a few behavioral goals is most effective.  Therefore, our system only allows support for 3 goals at any given time.";
@@ -75,8 +84,33 @@ $(document).ready(function() {
     }) 
     
 
+
     // Firebase watcher + initial loader for "Today's Progress"
     database.ref().on("child_added", function(snapshot) {
+        //Creates an array of all students in the database
+        studentArray.push(snapshot.key);
+        //console.log(studentArray);
+
+        //Create an array of all behaviors in the database
+        var item = snapshot.key + snapshot.val().behavior1;
+        bxArrayLinkedtoStudent.push(item);
+        var item = snapshot.key + snapshot.val().behavior2;
+        bxArrayLinkedtoStudent.push(item);
+        var item = snapshot.key + snapshot.val().behavior3;
+        bxArrayLinkedtoStudent.push(item);
+        //console.log(bxArrayLinkedtoStudent);
+
+        //Create an array of all behaviors in the database
+        var item = snapshot.val().behavior1;
+        bxArray.push(item);
+        var item = snapshot.val().behavior2;
+        bxArray.push(item);
+        var item = snapshot.val().behavior3;
+        bxArray.push(item);
+        //console.log(bxArray);
+        
+
+        
         //Appends current values to the page
         //Code to append data for just one behavior
         if (snapshot.val().numBehaviors === 1) {
@@ -87,17 +121,18 @@ $(document).ready(function() {
                     <td></td>
                 <tr>`
             )
-            $('#behavModalBody').append(
-                `<label id="bhvrStudentName">${snapshot.key}</label>
-                <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                <label class="input-group-text" for="bhvrSelect"
-                id="${snapshot.val().behavior1}">${snapshot.val().behavior1}</label></div>
-                <select class="custom-select" id="bhvrSelect">
-                <option selected>Choose...</option>
-                <option value="1">Met</option>
-                <option value="0">Did Not Meet</option>
-                <option value="null">N/A</option></select></div>`                             
+
+            $('#bxRatings').append(
+                `<div class="form-group">
+                    <h4>Joyful Jodi</h4> 
+                    <label for="JoyfulJodi">Wear crown all day</label>
+                    <select class="form-control" id="JoyfulJodi">
+                        <option class="form-control" type="text" disabled selected>Choose...</option>
+                        <option value='1'>Met</option>
+                        <option value='0'>Did Not Meet</option>
+                        <option value='null'>N/A</option>
+                    </select>
+                </div>`
             )
         }
         //Code to append data for two behaviors
@@ -114,27 +149,7 @@ $(document).ready(function() {
                     <td></td>
                 <tr>`
             )
-            $('#behavModalBody').append(
-                `<label id="bhvrStudentName">${snapshot.key}</label>
-                <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                <label class="input-group-text" for="bhvrSelect"
-                id="${snapshot.val().behavior1}">${snapshot.val().behavior1}</label></div>
-                <select class="custom-select" id="bhvrSelect">
-                <option selected>Choose...</option>
-                <option value="1">Met</option>
-                <option value="0">Did Not Meet</option>
-                <option value="null">N/A</option></select></div>
-                <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                <label class="input-group-text" for="bhvrSelect"
-                id="${snapshot.val().behavior2}">${snapshot.val().behavior2}</label></div>
-                <select class="custom-select" id="bhvrSelect">
-                <option selected>Choose...</option>
-                <option value="1">Met</option>
-                <option value="0">Did Not Meet</option>
-                <option value="null">N/A</option></select></div>`                                                         
-            )
+            
         }
         //Code to append data for three behaviors
         else if (snapshot.val().numBehaviors === 3) {
@@ -155,44 +170,66 @@ $(document).ready(function() {
                     <td></td>
                 <tr>`
             )
-            $('#behavModalBody').append(
-                `<label id="bhvrStudentName">${snapshot.key}</label>
-                <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                <label class="input-group-text" for="bhvrSelect"
-                id="${snapshot.val().behavior1}">${snapshot.val().behavior1}</label></div>
-                <select class="custom-select" id="bhvrSelect">
-                <option selected>Choose...</option>
-                <option value="1">Met</option>
-                <option value="0">Did Not Meet</option>
-                <option value="null">N/A</option></select></div>
-                <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                <label class="input-group-text" for="bhvrSelect"
-                id="${snapshot.val().behavior2}">${snapshot.val().behavior2}</label></div>
-                <select class="custom-select" id="bhvrSelect">
-                <option selected>Choose...</option>
-                <option value="1">Met</option>
-                <option value="0">Did Not Meet</option>
-                <option value="null">N/A</option></select></div>
-                <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                <label class="input-group-text" for="bhvrSelect"
-                id="${snapshot.val().behavior3}">${snapshot.val().behavior3}</label></div>
-                <select class="custom-select" id="bhvrSelect">
-                <option selected>Choose...</option>
-                <option value="1">Met</option>
-                <option value="0">Did Not Meet</option>
-                <option value="null">N/A</option></select></div>`                    
-            )
-        }
+            }
         else {
             console.log("Error");
         }
+
+        $('#bhvrSaveBtn').on('click tap', function() {
+            console.log('Working');
+    
+            var rating = parseInt($('#JoyfulJodi').val());
+            var met;
+            var tracked;
+            var studentName = 'Joyful Jodi';
+
+            if (!snapshot.val().metGoal.exists()) {
+                console.log("Doesn't Exist");
+
+                database.ref('Joyful Jodi').set({
+                    metGoal: 0,
+                    trackedGoal: 0
+                })
+            }
+            else {
+                met = snapshot.val().metGoal;
+                tracked = snapshot.val().trackedGoal;
+            }
+
+
+            console.log($('#JoyfulJodi').val());
+    
+            if (rating === 1) {
+                var newMet = met++;
+                var newTracked = tracked++;
+                database.ref('Joyful Jodi').update({
+                    metGoal: newMet,
+                    trackedGoal: newTracked
+                })
+                console.log("Met... met++ tracked++");
+            }
+            else if (rating === 0) {
+                var newTracked = tracked++;
+                database.ref('Joyful Jodi').update({
+                    trackedGoal: newTracked
+                })
+                console.log("Not met... tracked++");
+            }
+            else {
+                console.log("The student was not available to be rated.");
+            }
+        });
     // Handle the errors
     }, function(errorObject) {
         console.log("Errors handled: " + errorObject.code);    
     });
+
+
+
+
+
+
+
 
     //API call to They Said So for inspirational quote of the day
     $.ajax({
@@ -211,7 +248,8 @@ $(document).ready(function() {
             method: "GET"
         })
         .then(function(response) {
-            $("#joke").text(response.contents.jokes[0].joke.text);
+            var joke = response.contents.jokes[0].joke.text;
+            $("#joke").text(joke);
         });
     };
     getJoke();
@@ -221,57 +259,67 @@ $(document).ready(function() {
         //FarmSense API - uses UNIX timestamp
         var unixTime = moment().unix();
         var queryURL = "http://api.farmsense.net/v1/moonphases/?d=" + unixTime;
-        console.log("queryURL: " + queryURL);
+        //console.log("queryURL: " + queryURL);
         $.ajax({
             url: queryURL,
             method: "GET"
         })
         .then(function(response) {
-            console.log("getMoon response: " + response);
+            //console.log("getMoon response: " + response);
             var moonArray = JSON.parse(response);
-            console.log(moonArray[0].Phase);
+            //console.log(moonArray[0].Phase);
         });
     };
     getMoon();
 
+
+    
     //Database listener for the charts for a particular student
-    database.ref("Silly Sarah").on('value', function(snapshot) {
-         createChart(snapshot, 1);
+    database.ref('Silly Sarah').on('value', function(snapshot) {
+        //Creates chart for each behavior for this student
+        createChart(snapshot, 1, 'myChart1');
+        createChart(snapshot, 2, 'myChart2');
+        createChart(snapshot, 3, 'myChart3');
+
     })
 
-    function createChart(snapshot, bxNum) {
+    //Function to create a chart
+    function createChart(snapshot, bxNum, placementOnPage) {
         //Determines which behavior is being graphed and assigns the requested object to a variable for easier manipulation
         if (bxNum === 1) {
-            var b1Object = snapshot.val().b1data;
+            var bxObject = snapshot.val().b1data;
+            var bxDescription = snapshot.val().behavior1
         }
         else if (bxNum === 2) {
-            var b1Object = snapshot.val().b2data;
+            var bxObject = snapshot.val().b2data;
+            var bxDescription = snapshot.val().behavior2
         }
         else {
-            var b1Object = snapshot.val().b2data; 
+            var bxObject = snapshot.val().b3data;
+            var bxDescription = snapshot.val().behavior3
         }
 
     //Get the keys of the object and store them in an array
-    var keysb1 = [];
-    for(var key in b1Object) {
-        if(b1Object.hasOwnProperty(key)) { //to be safe
-            keysb1.push(key);
+    var keys = [];
+    for(var key in bxObject) {
+        if(bxObject.hasOwnProperty(key)) { //to be safe
+            keys.push(key);
         }
     }
 
     //Get the values of the object and store them in an array
-    var valuesb1 = [];
-    valuesb1 = Object.values(b1Object);
+    var values = [];
+    values = Object.values(bxObject);
     
     //Create chart for behavior 1
-    var ctx = document.getElementById("myChart1");
+    var ctx = document.getElementById(placementOnPage);
     var myChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: keysb1,
+            labels: keys,
             datasets: [{
-                label: snapshot.key + ': % of day for: ' + snapshot.val().behavior1,
-                data: valuesb1,
+                label: snapshot.key + ': % of day for: ' + bxDescription,
+                data: values,
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
                 ],
