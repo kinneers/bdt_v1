@@ -5,8 +5,13 @@
 }
 
 #quote,
-#source {
+#source,
+#weather-moon {
     font-family: 'Charm', cursive;
+}
+
+#moon-phase {
+    font-size: 16pt;
 }
 
 #source {
@@ -16,6 +21,12 @@
 .media-body {
     padding-top: 10px;
 }
+
+.moonPhoto {
+    border: 5px solid #da3180;
+    max-width: 100%;
+    height: auto;
+} 
 
 .small-font {
     font-size: 10px;
