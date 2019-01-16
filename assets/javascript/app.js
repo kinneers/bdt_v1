@@ -8,6 +8,7 @@ $(document).ready(function() {
     var bxArray = [];
     var met;
     var tracked;
+    var savedSnapshot;
 
 
 
@@ -43,21 +44,28 @@ $(document).ready(function() {
             if ((studentName !== '') && (behavior !== '') && (!quicksnapshot.child(studentName).exists())) {
                 database.ref(studentName).set({
                     behavior1: behavior,
-                    numBehaviors: 1
+                    numBehaviors: 1,
+                    met: 0,
+                    tracked: 0
                 });
             }
             /*If studentName is already in database, the behavior is pushed as a new behavior for that student. */
             else if ((studentName !== '') && (behavior !== '') && (quicksnapshot.child(studentName).exists()) && (quicksnapshot.child(studentName).val().numBehaviors === 1)) {
                 database.ref(studentName).update({
                     behavior2: behavior,
-                    numBehaviors: 2
+                    numBehaviors: 2,
+                    met: 0,
+                    tracked: 0
+
                 });
             }
             /*If studentName is already in database, the behavior is pushed as a new behavior for that student. */
             else if ((studentName !== '') && (behavior !== '') && (quicksnapshot.child(studentName).exists()) && (quicksnapshot.child(studentName).val().numBehaviors === 2)) {
                 database.ref(studentName).update({
                     behavior3: behavior,
-                    numBehaviors: 3
+                    numBehaviors: 3,
+                    met: 0,
+                    tracked: 0
                 });
             }
             /*If student already has 3 goals present message.*/
@@ -87,6 +95,8 @@ $(document).ready(function() {
 
     // Firebase watcher + initial loader for "Today's Progress"
     database.ref().on("child_added", function(snapshot) {
+        savedSnapshot = snapshot;
+        
         //Creates an array of all students in the database
         studentArray.push(snapshot.key);
         //console.log(studentArray);
@@ -174,59 +184,51 @@ $(document).ready(function() {
         else {
             console.log("Error");
         }
-
-        $('#bhvrSaveBtn').on('click tap', function() {
-            console.log('Working');
-    
-            var rating = parseInt($('#JoyfulJodi').val());
-            var met;
-            var tracked;
-            var studentName = 'Joyful Jodi';
-
-            if (!snapshot.val().metGoal.exists()) {
-                console.log("Doesn't Exist");
-
-                database.ref('Joyful Jodi').set({
-                    metGoal: 0,
-                    trackedGoal: 0
-                })
-            }
-            else {
-                met = snapshot.val().metGoal;
-                tracked = snapshot.val().trackedGoal;
-            }
-
-
-            console.log($('#JoyfulJodi').val());
-    
-            if (rating === 1) {
-                var newMet = met++;
-                var newTracked = tracked++;
-                database.ref('Joyful Jodi').update({
-                    metGoal: newMet,
-                    trackedGoal: newTracked
-                })
-                console.log("Met... met++ tracked++");
-            }
-            else if (rating === 0) {
-                var newTracked = tracked++;
-                database.ref('Joyful Jodi').update({
-                    trackedGoal: newTracked
-                })
-                console.log("Not met... tracked++");
-            }
-            else {
-                console.log("The student was not available to be rated.");
-            }
-        });
     // Handle the errors
     }, function(errorObject) {
         console.log("Errors handled: " + errorObject.code);    
     });
 
 
+    database.ref().on("value", function(snapshot) {
 
+        $('#bhvrSaveBtn').on('click tap', function() {
+            console.log('Working');
+            studentName = 'Joyful Jodi';
 
+            var rating = parseInt($('#JoyfulJodi').val());
+
+            console.log(parseInt(snapshot.val().met));
+            console.log(parseInt(snapshot.child(studentName).val().tracked));
+            
+            console.log(snapshot.val().met);
+            console.log(tracked);
+            console.log($('#JoyfulJodi').val());
+
+            if (rating === 1) {
+                met++;
+                tracked++;
+                database.ref('Joyful Jodi').update({
+                    met: met,
+                    tracked: tracked
+                })
+                console.log("Met... met++ tracked++");
+            }
+            else if (rating === 0) {
+                tracked++;
+                database.ref('Joyful Jodi').update({
+                    tracked: tracked
+                })
+                console.log("Not met... tracked++");
+            }
+            else {
+                console.log("The student was not available to be rated.");
+            }
+    });
+        // Handle the errors
+    }, function(errorObject) {
+        console.log("Errors handled: " + errorObject.code);    
+    });
 
 
 
