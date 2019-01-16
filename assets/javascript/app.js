@@ -11,9 +11,8 @@ $(document).ready(function() {
     var savedSnapshot;
 
 
-
-    console.log(studentArray);
-    console.log(bxArray);
+    //console.log(studentArray);
+    //console.log(bxArray);
 
     // Initialize Firebase
     var config = {
@@ -95,7 +94,6 @@ $(document).ready(function() {
 
     // Firebase watcher + initial loader for "Today's Progress"
     database.ref().on("child_added", function(snapshot) {
-        savedSnapshot = snapshot;
         
         //Creates an array of all students in the database
         studentArray.push(snapshot.key);
@@ -190,20 +188,21 @@ $(document).ready(function() {
     });
 
 
-    database.ref().on("value", function(snapshot) {
+    database.ref('Joyful Jodi').on("value", function(snapshot) {
 
         $('#bhvrSaveBtn').on('click tap', function() {
             console.log('Working');
-            studentName = 'Joyful Jodi';
+            
 
             var rating = parseInt($('#JoyfulJodi').val());
+            //console.log(rating);
 
-            console.log(parseInt(snapshot.val().met));
-            console.log(parseInt(snapshot.child(studentName).val().tracked));
+            met = parseInt(snapshot.val().met);
+            tracked = parseInt(snapshot.val().tracked);
             
-            console.log(snapshot.val().met);
-            console.log(tracked);
-            console.log($('#JoyfulJodi').val());
+            //console.log(snapshot.val().met);
+            //console.log(tracked);
+            //console.log($('#JoyfulJodi').val());
 
             if (rating === 1) {
                 met++;
@@ -224,11 +223,12 @@ $(document).ready(function() {
             else {
                 console.log("The student was not available to be rated.");
             }
-    });
+        });
         // Handle the errors
     }, function(errorObject) {
         console.log("Errors handled: " + errorObject.code);    
     });
+
 
 
 
@@ -271,7 +271,7 @@ $(document).ready(function() {
             var moonArray = JSON.parse(response);
             //console.log(moonArray[0].Phase);
             phase = moonArray[0].Phase;
-            console.log("phase variable is: " + phase);
+            //console.log("phase variable is: " + phase);
             var moonClip = 0;  
             var phases = ["New Moon","Waxing Crescent","1st Quarter","Waxing Gibbous","Full Moon","Waning Gibbous","3rd Quarter","Waning Crescent","Dark Moon"];
             for (var i = 0; i < phases.length; i++) {
