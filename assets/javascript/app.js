@@ -270,9 +270,24 @@ $(document).ready(function() {
             //console.log("getMoon response: " + response);
             var moonArray = JSON.parse(response);
             //console.log(moonArray[0].Phase);
+            phase = moonArray[0].Phase;
+            console.log("phase variable is: " + phase);
+            var moonClip = 0;  
+            var phases = ["New Moon","Waxing Crescent","1st Quarter","Waxing Gibbous","Full Moon","Waning Gibbous","3rd Quarter","Waning Crescent","Dark Moon"];
+            for (var i = 0; i < phases.length; i++) {
+                if (phases[i] === phase) {
+                    moonClip = i
+                }
+            }
+            if (moonClip === 8) {
+                phase = "New Moon";
+                moonClip = 0;
+            }
+            $("#moon-phase").text(phase);
+            var dispMoon = "<img src='assets/images/moon" + moonClip + ".jpg' class='rounded mx-auto d-block float-left moonPhoto'>";
+            $("#phases-appear-here").html(dispMoon);
         });
-    };
-    getMoon();
+    };    getMoon();
 
 
     
