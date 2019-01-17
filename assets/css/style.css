@@ -14,6 +14,10 @@
     font-size: 16pt;
 }
 
+#weather-moon {
+    text-align: center;
+}
+
 #source {
     text-align: center; 
 }

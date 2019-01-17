@@ -4,12 +4,10 @@ $(document).ready(function() {
     var behavior = '';
     var errMessage = "";
     var studentArray = [];
-    var bxArrayLinkedtoStudent = [];
+    var bxArrayLinkedtoStudent = [];  //Will need to loop through and remove spaces to use as IDs
     var bxArray = [];
     var met;
     var tracked;
-    var savedSnapshot;
-
 
     //console.log(studentArray);
     //console.log(bxArray);
@@ -42,29 +40,28 @@ $(document).ready(function() {
             number of behaviors currently being tracked for that student.*/
             if ((studentName !== '') && (behavior !== '') && (!quicksnapshot.child(studentName).exists())) {
                 database.ref(studentName).set({
-                    behavior1: behavior,
-                    numBehaviors: 1,
-                    met: 0,
-                    tracked: 0
+                    behavior1: {behavior,
+                                met: 0,
+                                tracked: 0},
+                    numBehaviors: 1,  
                 });
             }
             /*If studentName is already in database, the behavior is pushed as a new behavior for that student. */
             else if ((studentName !== '') && (behavior !== '') && (quicksnapshot.child(studentName).exists()) && (quicksnapshot.child(studentName).val().numBehaviors === 1)) {
                 database.ref(studentName).update({
-                    behavior2: behavior,
+                    behavior2: {behavior,
+                                met: 0,
+                                tracked: 0},
                     numBehaviors: 2,
-                    met: 0,
-                    tracked: 0
-
                 });
             }
             /*If studentName is already in database, the behavior is pushed as a new behavior for that student. */
             else if ((studentName !== '') && (behavior !== '') && (quicksnapshot.child(studentName).exists()) && (quicksnapshot.child(studentName).val().numBehaviors === 2)) {
                 database.ref(studentName).update({
-                    behavior3: behavior,
+                    behavior3: {behavior,
+                                met: 0,
+                                tracked: 0},
                     numBehaviors: 3,
-                    met: 0,
-                    tracked: 0
                 });
             }
             /*If student already has 3 goals present message.*/
@@ -77,6 +74,8 @@ $(document).ready(function() {
                 errMessage = "No Student Data Entered";
                 console.log(errMessage);
             }
+            //Reloads the page when a student/behavior is created in order for the on value function to recognize the new data
+            location.reload();
         }); 
 
         // error checking
@@ -90,14 +89,12 @@ $(document).ready(function() {
         $('#goal').val('');
     }) 
     
-
-
     // Firebase watcher + initial loader for "Today's Progress"
     database.ref().on("child_added", function(snapshot) {
         
         //Creates an array of all students in the database
         studentArray.push(snapshot.key);
-        //console.log(studentArray);
+        console.log(studentArray);
 
         //Create an array of all behaviors in the database
         var item = snapshot.key + snapshot.val().behavior1;
@@ -106,7 +103,7 @@ $(document).ready(function() {
         bxArrayLinkedtoStudent.push(item);
         var item = snapshot.key + snapshot.val().behavior3;
         bxArrayLinkedtoStudent.push(item);
-        //console.log(bxArrayLinkedtoStudent);
+        console.log(bxArrayLinkedtoStudent);
 
         //Create an array of all behaviors in the database
         var item = snapshot.val().behavior1;
@@ -115,7 +112,7 @@ $(document).ready(function() {
         bxArray.push(item);
         var item = snapshot.val().behavior3;
         bxArray.push(item);
-        //console.log(bxArray);
+        console.log(bxArray);
         
 
         
@@ -182,115 +179,53 @@ $(document).ready(function() {
         else {
             console.log("Error");
         }
+
+
+        // Handle the errors
+    }, function(errorObject) {
+        console.log("Errors handled: " + errorObject.code);    
+    });
+
+    
+    database.ref('Joyful Jodi').on("value", function(snapshot) {
+        //Captures the value of the rating
+        $('#bhvrSaveBtn').on('click tap', function() {
+            //Saves the rating
+            var rating = parseInt($('#JoyfulJodi').val());
+            //Gets current met and tracked values from Firebase
+            met = parseInt(snapshot.val().behavior1.met);
+            tracked = parseInt(snapshot.val().behavior1.tracked);
+            var bx = snapshot.val().behavior1.behavior;
+            //Increments met and tracked appropriately according to rating
+            if (rating === 1) {
+                met++;
+                tracked++;
+                database.ref('Joyful Jodi').update({
+                    behavior1: {behavior: bx,
+                                met: met,
+                                tracked: tracked}
+                })
+            }
+            else if (rating === 0) {
+                tracked++;
+                database.ref('Joyful Jodi').update({
+                    behavior1: {behavior: bx,
+                                met: met,
+                                tracked: tracked}
+                })
+            }
+            else {
+                console.log("The student was not available to be rated.");
+            }
+        });
     // Handle the errors
     }, function(errorObject) {
         console.log("Errors handled: " + errorObject.code);    
     });
 
 
-    database.ref('Joyful Jodi').on("value", function(snapshot) {
+    //CHARTJS
 
-        $('#bhvrSaveBtn').on('click tap', function() {
-            console.log('Working');
-            
-
-            var rating = parseInt($('#JoyfulJodi').val());
-            //console.log(rating);
-
-            met = parseInt(snapshot.val().met);
-            tracked = parseInt(snapshot.val().tracked);
-            
-            //console.log(snapshot.val().met);
-            //console.log(tracked);
-            //console.log($('#JoyfulJodi').val());
-
-            if (rating === 1) {
-                met++;
-                tracked++;
-                database.ref('Joyful Jodi').update({
-                    met: met,
-                    tracked: tracked
-                })
-                console.log("Met... met++ tracked++");
-            }
-            else if (rating === 0) {
-                tracked++;
-                database.ref('Joyful Jodi').update({
-                    tracked: tracked
-                })
-                console.log("Not met... tracked++");
-            }
-            else {
-                console.log("The student was not available to be rated.");
-            }
-        });
-        // Handle the errors
-    }, function(errorObject) {
-        console.log("Errors handled: " + errorObject.code);    
-    });
-
-
-
-
-
-    //API call to They Said So for inspirational quote of the day
-    $.ajax({
-        url: "http://quotes.rest/qod.json?category=inspire",
-        method: "GET"
-    }).then(function(response){
-        $('#quote').text(response.contents.quotes[0].quote);
-        $('#source').text(response.contents.quotes[0].author);
-    })
-
-    //API call for Joke of the Day
-    function getJoke() {
-        var queryURL = "https://api.jokes.one/jod";
-        $.ajax({
-            url: queryURL,
-            method: "GET"
-        })
-        .then(function(response) {
-            var joke = response.contents.jokes[0].joke.text;
-            $("#joke").text(joke);
-        });
-    };
-    getJoke();
-
-    //API call for Farm Sense- uses UNIX timestamp
-    function getMoon() {
-        //FarmSense API - uses UNIX timestamp
-        var unixTime = moment().unix();
-        var queryURL = "http://api.farmsense.net/v1/moonphases/?d=" + unixTime;
-        //console.log("queryURL: " + queryURL);
-        $.ajax({
-            url: queryURL,
-            method: "GET"
-        })
-        .then(function(response) {
-            //console.log("getMoon response: " + response);
-            var moonArray = JSON.parse(response);
-            //console.log(moonArray[0].Phase);
-            phase = moonArray[0].Phase;
-            //console.log("phase variable is: " + phase);
-            var moonClip = 0;  
-            var phases = ["New Moon","Waxing Crescent","1st Quarter","Waxing Gibbous","Full Moon","Waning Gibbous","3rd Quarter","Waning Crescent","Dark Moon"];
-            for (var i = 0; i < phases.length; i++) {
-                if (phases[i] === phase) {
-                    moonClip = i
-                }
-            }
-            if (moonClip === 8) {
-                phase = "New Moon";
-                moonClip = 0;
-            }
-            $("#moon-phase").text(phase);
-            var dispMoon = "<img src='assets/images/moon" + moonClip + ".jpg' class='rounded mx-auto d-block float-left moonPhoto'>";
-            $("#phases-appear-here").html(dispMoon);
-        });
-    };    getMoon();
-
-
-    
     //Database listener for the charts for a particular student
     database.ref('Silly Sarah').on('value', function(snapshot) {
         //Creates chart for each behavior for this student
@@ -359,4 +294,63 @@ $(document).ready(function() {
         });
     }
 
-})
+    //API CALLS
+
+    //API call to They Said So for inspirational quote of the day
+    $.ajax({
+        url: "http://quotes.rest/qod.json?category=inspire",
+        method: "GET"
+    }).then(function(response){
+        $('#quote').text(response.contents.quotes[0].quote);
+        $('#source').text(response.contents.quotes[0].author);
+    })
+
+    //API call for Joke of the Day
+    function getJoke() {
+        var queryURL = "https://api.jokes.one/jod";
+        $.ajax({
+            url: queryURL,
+            method: "GET"
+        })
+        .then(function(response) {
+            var joke = response.contents.jokes[0].joke.text;
+            $("#joke").text(joke);
+        });
+    };
+    getJoke();
+
+    //API call for Farm Sense- uses UNIX timestamp
+    function getMoon() {
+        //FarmSense API - uses UNIX timestamp
+        var unixTime = moment().unix();
+        var queryURL = "http://api.farmsense.net/v1/moonphases/?d=" + unixTime;
+        //console.log("queryURL: " + queryURL);
+        $.ajax({
+            url: queryURL,
+            method: "GET"
+        })
+        .then(function(response) {
+            //console.log("getMoon response: " + response);
+            var moonArray = JSON.parse(response);
+            //console.log(moonArray[0].Phase);
+            phase = moonArray[0].Phase;
+            //console.log("phase variable is: " + phase);
+            var moonClip = 0;  
+            var phases = ["New Moon","Waxing Crescent","1st Quarter","Waxing Gibbous","Full Moon","Waning Gibbous","3rd Quarter","Waning Crescent","Dark Moon"];
+            for (var i = 0; i < phases.length; i++) {
+                if (phases[i] === phase) {
+                    moonClip = i
+                }
+            }
+            //Treating "Dark Moon" phase as "New Moon" for practical purposes
+            if (moonClip === 8) {
+                phase = "New Moon";
+                moonClip = 0;
+            }
+            $("#moon-phase").text(phase);
+            var dispMoon = "<img src='assets/images/moon" + moonClip + ".jpg' class='rounded mx-auto d-block moonPhoto'>";
+            $("#phases-appear-here").html(dispMoon);
+        });
+    };    
+    getMoon();
+});
