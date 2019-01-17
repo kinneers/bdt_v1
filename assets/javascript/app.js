@@ -135,8 +135,8 @@ $(document).ready(function() {
             $('#bxRatings').append(
                 `<div class="form-group">
                     <h4>${snapshot.key}</h4> 
-                    <label for="stKey">${snapshot.val().behavior1.behavior}</label>
-                    <select class="form-control" id="stKey">
+                    <label for="${stKey}">${snapshot.val().behavior1.behavior}</label>
+                    <select class="form-control" id="${stKey}">
                         <option class="form-control" type="text" disabled selected>Choose...</option>
                         <option value='1'>Met</option>
                         <option value='0'>Did Not Meet</option>
@@ -171,15 +171,15 @@ $(document).ready(function() {
             $('#bxRatings').append(
                 `<div class="form-group">
                     <h4>${snapshot.key}</h4> 
-                    <label for="stKey">${snapshot.val().behavior1.behavior}</label>
-                    <select class="form-control" id="stKey">
+                    <label for="${stKey}">${snapshot.val().behavior1.behavior}</label>
+                    <select class="form-control" id="${stKey}">
                         <option class="form-control" type="text" disabled selected>Choose...</option>
                         <option value='1'>Met</option>
                         <option value='0'>Did Not Meet</option>
                         <option value='null'>N/A</option>
                     </select>
-                    <label for="stKey">${snapshot.val().behavior2.behavior}</label>
-                    <select class="form-control" id="stKey">
+                    <label for="${stKey}">${snapshot.val().behavior2.behavior}</label>
+                    <select class="form-control" id="${stKey}">
                         <option class="form-control" type="text" disabled selected>Choose...</option>
                         <option value='1'>Met</option>
                         <option value='0'>Did Not Meet</option>
@@ -190,6 +190,16 @@ $(document).ready(function() {
         }
         //Code to append data for three behaviors
         else if (snapshot.val().numBehaviors === 3) {
+            //create keys from student data, remove all spaces
+            var stKey = snapshot.key;
+            stKey = stKey.replace(/\s+/g, '');
+            var bx1Key = snapshot.val().behavior1.behavior;
+            bx1Key = bx1Key.replace(/\s+/g, '');
+            var bx2Key = snapshot.val().behavior2.behavior;
+            bx2Key = bx2Key.replace(/\s+/g, '');
+            var bx3Key = snapshot.val().behavior3.behavior;
+            bx3Key = bx3Key.replace(/\s+/g, '');
+
             $('#well').append(
                 `<tr id="${snapshot.key}">
                     <td>${snapshot.key}</td>
@@ -210,22 +220,22 @@ $(document).ready(function() {
             $('#bxRatings').append(
                 `<div class="form-group">
                     <h4>${snapshot.key}</h4> 
-                    <label for="stKey">${snapshot.val().behavior1.behavior}</label>
-                    <select class="form-control" id="stKey">
+                    <label for="${stKey}">${snapshot.val().behavior1.behavior}</label>
+                    <select class="form-control" id="${stKey}">
                         <option class="form-control" type="text" disabled selected>Choose...</option>
                         <option value='1'>Met</option>
                         <option value='0'>Did Not Meet</option>
                         <option value='null'>N/A</option>
                     </select>
-                    <label for="stKey">${snapshot.val().behavior2.behavior}</label>
-                    <select class="form-control" id="stKey">
+                    <label for="${stKey}">${snapshot.val().behavior2.behavior}</label>
+                    <select class="form-control" id="${stKey}">
                         <option class="form-control" type="text" disabled selected>Choose...</option>
                         <option value='1'>Met</option>
                         <option value='0'>Did Not Meet</option>
                         <option value='null'>N/A</option>
                     </select>
-                    <label for="stKey">${snapshot.val().behavior3.behavior}</label>
-                    <select class="form-control" id="stKey">
+                    <label for="${stKey}">${snapshot.val().behavior3.behavior}</label>
+                    <select class="form-control" id="${stKey}">
                         <option class="form-control" type="text" disabled selected>Choose...</option>
                         <option value='1'>Met</option>
                         <option value='0'>Did Not Meet</option>
@@ -250,7 +260,10 @@ $(document).ready(function() {
         //Captures the value of the rating
         $('#bhvrSaveBtn').on('click tap', function() {
             //Saves the rating
-            var rating = parseInt($('#JoyfulJodi').val());
+            var stKey = snapshot.key;
+            stKey = stKey.replace(/\s+/g, '');
+            var rating = parseInt($('#stKey').val());
+            //var rating = parseInt($('#JoyfulJodi').val());
             //Gets current met and tracked values from Firebase
             met = parseInt(snapshot.val().behavior1.met);
             tracked = parseInt(snapshot.val().behavior1.tracked);
