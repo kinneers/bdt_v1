@@ -298,7 +298,7 @@ $(document).ready(function() {
 
     //API call to They Said So for inspirational quote of the day
     $.ajax({
-        url: "http://quotes.rest/qod.json?category=inspire",
+        url: "https://quotes.rest/qod.json?category=inspire",
         method: "GET"
     }).then(function(response){
         $('#quote').text(response.contents.quotes[0].quote);
@@ -323,7 +323,7 @@ $(document).ready(function() {
     function getMoon() {
         //FarmSense API - uses UNIX timestamp
         var unixTime = moment().unix();
-        var queryURL = "http://api.farmsense.net/v1/moonphases/?d=" + unixTime;
+        var queryURL = "https://cors-anywhere.herokuapp.com/http://api.farmsense.net/v1/moonphases/?d=" + unixTime;
         //console.log("queryURL: " + queryURL);
         $.ajax({
             url: queryURL,
