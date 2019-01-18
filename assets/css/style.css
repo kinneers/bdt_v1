@@ -6,6 +6,7 @@
 
 #quote,
 #source,
+#weather-cast,
 #weather-moon {
     font-family: 'Charm', cursive;
 }
@@ -14,8 +15,13 @@
     font-size: 16pt;
 }
 
+#weather-cast,
 #weather-moon {
     text-align: center;
+}
+
+#weather-cast {
+    font-size: 14pt;
 }
 
 #source {
