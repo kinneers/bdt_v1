@@ -18,6 +18,98 @@ $(document).ready(function() {
     //console.log(bxArrayLinkedtoStudent);
     //console.log(bxArrayLinkedtoStudentCompressed);
 
+        //API CALLS
+
+    //API call to They Said So for inspirational quote of the day
+    $.ajax({
+        url: "https://quotes.rest/qod.json?category=inspire",
+        method: "GET"
+    }).then(function(response){
+        $('#quote').text(response.contents.quotes[0].quote);
+        $('#source').text(response.contents.quotes[0].author);
+    })
+
+    //API call for Joke of the Day
+    function getJoke() {
+        var queryURL = "https://api.jokes.one/jod";
+        $.ajax({
+            url: queryURL,
+            method: "GET"
+        })
+        .then(function(response) {
+            var joke = response.contents.jokes[0].joke.text;
+            $("#joke").text(joke);
+        });
+    };
+    getJoke();
+
+    //API call for Farm Sense- uses UNIX timestamp
+    function getMoon() {
+        //FarmSense API - uses UNIX timestamp
+        var unixTime = moment().unix();
+        //The code below uses a proxy because github requires https and this api was not availible in https
+        var queryURL = "https://cors-anywhere.herokuapp.com/http://api.farmsense.net/v1/moonphases/?d=" + unixTime;
+        //console.log("queryURL: " + queryURL);
+        $.ajax({
+            url: queryURL,
+            method: "GET"
+        })
+        .then(function(response) {
+            //console.log("getMoon response: " + response);
+            var moonArray = JSON.parse(response);
+            //console.log(moonArray[0].Phase);
+            phase = moonArray[0].Phase;
+            //console.log("phase variable is: " + phase);
+            var moonClip = 0;  
+            var phases = ["New Moon","Waxing Crescent","1st Quarter","Waxing Gibbous","Full Moon","Waning Gibbous","3rd Quarter","Waning Crescent","Dark Moon"];
+            for (var i = 0; i < phases.length; i++) {
+                if (phases[i] === phase) {
+                    moonClip = i
+                }
+            }
+            //Treating "Dark Moon" phase as "New Moon" for practical purposes
+            if (moonClip === 8) {
+                phase = "New Moon";
+                moonClip = 0;
+            }
+            $("#moon-phase").text(phase);
+            var dispMoon = "<img src='assets/images/moon" + moonClip + ".jpg' class='rounded mx-auto d-block moonPhoto'>";
+            $("#phases-appear-here").html(dispMoon);
+        });
+    };    
+    getMoon();
+
+    function getWeather(zip) {
+        //var apiKey = "9098488de48b8a1057b705dbcc308613";
+        var apiKey = "e3e3ed7a89cf8bdd79c4a895a82cb180";  //default key
+        var queryURL = "https://api.openweathermap.org/data/2.5/weather?zip=" + zip + ",us&appid=" + apiKey;
+        //console.log("queryURL: " + queryURL);
+        $.ajax({
+            url: queryURL,
+            method: "GET"
+        })
+        .then(function(response) {
+            var currCond = "Current Conditions: " + response.weather[0].description;
+            $("#conditions").text(currCond);
+            var tempK = response.main.temp;
+            // returned temperature is in Kelvin, convert to Fahrenheit
+            var tempF = ((tempK - 273.15) * (9/5) + 32);
+            tempF = Math.round(tempF);
+            // use degree symbol
+            tempF = "Temperature: " + tempF + "&#8457";
+            $("#temperature").html(tempF);
+            var humdt = "Humidity: " + response.main.humidity + "%";
+            $("#humidity").text(humdt);
+            var wind = "Wind Speed: " + response.wind.speed + " MPH";
+            $("#winds").text(wind);
+            var pres = "Pressure: " + response.main.pressure + " millibars";
+            $("#pressure").text(pres);
+        });
+    };
+
+    getWeather(30506);
+
+
     // Initialize Firebase
     var config = {
         apiKey: "AIzaSyBI7PADfav8k7OjpKxN2Otow5smDRuyMNI",
@@ -412,95 +504,4 @@ $(document).ready(function() {
         }
         });
     }
-
-    //API CALLS
-
-    //API call to They Said So for inspirational quote of the day
-    $.ajax({
-        url: "https://quotes.rest/qod.json?category=inspire",
-        method: "GET"
-    }).then(function(response){
-        $('#quote').text(response.contents.quotes[0].quote);
-        $('#source').text(response.contents.quotes[0].author);
-    })
-
-    //API call for Joke of the Day
-    function getJoke() {
-        var queryURL = "https://api.jokes.one/jod";
-        $.ajax({
-            url: queryURL,
-            method: "GET"
-        })
-        .then(function(response) {
-            var joke = response.contents.jokes[0].joke.text;
-            $("#joke").text(joke);
-        });
-    };
-    getJoke();
-
-    //API call for Farm Sense- uses UNIX timestamp
-    function getMoon() {
-        //FarmSense API - uses UNIX timestamp
-        var unixTime = moment().unix();
-        //The code below uses a proxy because github requires https and this api was not availible in https
-        var queryURL = "https://cors-anywhere.herokuapp.com/http://api.farmsense.net/v1/moonphases/?d=" + unixTime;
-        //console.log("queryURL: " + queryURL);
-        $.ajax({
-            url: queryURL,
-            method: "GET"
-        })
-        .then(function(response) {
-            //console.log("getMoon response: " + response);
-            var moonArray = JSON.parse(response);
-            //console.log(moonArray[0].Phase);
-            phase = moonArray[0].Phase;
-            //console.log("phase variable is: " + phase);
-            var moonClip = 0;  
-            var phases = ["New Moon","Waxing Crescent","1st Quarter","Waxing Gibbous","Full Moon","Waning Gibbous","3rd Quarter","Waning Crescent","Dark Moon"];
-            for (var i = 0; i < phases.length; i++) {
-                if (phases[i] === phase) {
-                    moonClip = i
-                }
-            }
-            //Treating "Dark Moon" phase as "New Moon" for practical purposes
-            if (moonClip === 8) {
-                phase = "New Moon";
-                moonClip = 0;
-            }
-            $("#moon-phase").text(phase);
-            var dispMoon = "<img src='assets/images/moon" + moonClip + ".jpg' class='rounded mx-auto d-block moonPhoto'>";
-            $("#phases-appear-here").html(dispMoon);
-        });
-    };    
-    getMoon();
-
-    function getWeather(zip) {
-        //var apiKey = "9098488de48b8a1057b705dbcc308613";
-        var apiKey = "e3e3ed7a89cf8bdd79c4a895a82cb180";  //default key
-        var queryURL = "https://api.openweathermap.org/data/2.5/weather?zip=" + zip + ",us&appid=" + apiKey;
-        //console.log("queryURL: " + queryURL);
-        $.ajax({
-            url: queryURL,
-            method: "GET"
-        })
-        .then(function(response) {
-            var currCond = "Current Conditions: " + response.weather[0].description;
-            $("#conditions").text(currCond);
-            var tempK = response.main.temp;
-            // returned temperature is in Kelvin, convert to Fahrenheit
-            var tempF = ((tempK - 273.15) * (9/5) + 32);
-            tempF = Math.round(tempF);
-            // use degree symbol
-            tempF = "Temperature: " + tempF + "&#8457";
-            $("#temperature").html(tempF);
-            var humdt = "Humidity: " + response.main.humidity + "%";
-            $("#humidity").text(humdt);
-            var wind = "Wind Speed: " + response.wind.speed + " MPH";
-            $("#winds").text(wind);
-            var pres = "Pressure: " + response.main.pressure + " millibars";
-            $("#pressure").text(pres);
-        });
-    };
-
-    getWeather(30506);
 });
