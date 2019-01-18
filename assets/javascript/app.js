@@ -12,8 +12,6 @@ $(document).ready(function() {
     var tracked;
     var studentList = [];
 
-
-
     //console.log(studentArray);
     //console.log(studentArrayCompressed);
     //console.log(bxArray);
@@ -104,21 +102,34 @@ $(document).ready(function() {
         var bx1 = snapshot.val().behavior1;
         var bx2 = snapshot.val().behavior2;
         var bx3 = snapshot.val().behavior3;
+        var met1 = snapshot.val().behavior1.met;
+        var met2 = snapshot.val().behavior2.met;
+        var met3 = snapshot.val().behavior3.met;
+        var tracked1 = snapshot.val().behavior1.tracked;
+        var tracked2 = snapshot.val().behavior2.tracked;
+        var tracked3 = snapshot.val().behavior3.tracked;
 
         studentList.push({
             studentName,
             bx1,
             bx2,
-            bx3
+            bx3,
+            met1,
+            met2,
+            met3,
+            tracked1,
+            tracked2,
+            tracked3
         });
         
         console.log(studentList);
+        
         
         //Creates an array of all students in the database in both compressed and uncompressed versions
         studentArray.push(snapshot.key);
         studentArrayCompressed.push(snapshot.key.replace(/\s+/g, ''));
 
-        /*
+        
         //Create an array of all behaviors in the database
         var item = snapshot.val().behavior1.behavior;
         bxArray.push(item);
@@ -127,7 +138,7 @@ $(document).ready(function() {
         var item = snapshot.val().behavior3.behavior;
         bxArray.push(item);
         console.log("bxArray: " + bxArray);
-        */
+        
         
         //Create an array of all behaviors in the database linked to student
         //One behavior exists
