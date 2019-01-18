@@ -462,4 +462,34 @@ $(document).ready(function() {
         });
     };    
     getMoon();
+
+    function getWeather(zip) {
+        //var apiKey = "9098488de48b8a1057b705dbcc308613";
+        var apiKey = "e3e3ed7a89cf8bdd79c4a895a82cb180";  //default key
+        var queryURL = "https://api.openweathermap.org/data/2.5/weather?zip=" + zip + ",us&appid=" + apiKey;
+        //console.log("queryURL: " + queryURL);
+        $.ajax({
+            url: queryURL,
+            method: "GET"
+        })
+        .then(function(response) {
+            var currCond = "Current Conditions: " + response.weather[0].description;
+            $("#conditions").text(currCond);
+            var tempK = response.main.temp;
+            // returned temperature is in Kelvin, convert to Fahrenheit
+            var tempF = ((tempK - 273.15) * (9/5) + 32);
+            tempF = Math.round(tempF);
+            // use degree symbol
+            tempF = "Temperature: " + tempF + "&#8457";
+            $("#temperature").html(tempF);
+            var humdt = "Humidity: " + response.main.humidity + "%";
+            $("#humidity").text(humdt);
+            var wind = "Wind Speed: " + response.wind.speed + " MPH";
+            $("#winds").text(wind);
+            var pres = "Pressure: " + response.main.pressure + " millibars";
+            $("#pressure").text(pres);
+        });
+    };
+
+    getWeather(30506);
 });
