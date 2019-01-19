@@ -8,26 +8,30 @@ $(document).ready(function() {
     var bxArray = [];
     var bxArrayLinkedtoStudent = [];
     var bxArrayLinkedtoStudentCompressed = [];
+    var bxArrayCompressed = [];
     var met;
     var tracked;
     var studentList = [];
+    var stKey;
+    var bx1Key;
+    var bx2Key;
+    var bx3Key;
 
-    //console.log(studentArray);
-    //console.log(studentArrayCompressed);
-    //console.log(bxArray);
-    //console.log(bxArrayLinkedtoStudent);
-    //console.log(bxArrayLinkedtoStudentCompressed);
+    console.log(studentList);
 
-        //API CALLS
+    //API CALLS
 
     //API call to They Said So for inspirational quote of the day
-    $.ajax({
-        url: "https://quotes.rest/qod.json?category=inspire",
-        method: "GET"
-    }).then(function(response){
-        $('#quote').text(response.contents.quotes[0].quote);
-        $('#source').text(response.contents.quotes[0].author);
-    })
+    function getQuote() {
+        $.ajax({
+            url: "https://quotes.rest/qod.json?category=inspire",
+            method: "GET"
+        }).then(function(response){
+            $('#quote').text(response.contents.quotes[0].quote);
+            $('#source').text(response.contents.quotes[0].author);
+        })
+    }
+    getQuote();
 
     //API call for Joke of the Day
     function getJoke() {
@@ -106,9 +110,7 @@ $(document).ready(function() {
             $("#pressure").text(pres);
         });
     };
-
     getWeather(30506);
-
 
     // Initialize Firebase
     var config = {
@@ -175,7 +177,6 @@ $(document).ready(function() {
             //Reloads the page when a student/behavior is created in order for the on value function to recognize the new data
             location.reload();
         }); 
-
         // error checking
         if (errMessage !== "") {
             $('#warnModalText').text(errMessage);
@@ -189,85 +190,53 @@ $(document).ready(function() {
     
     // Firebase watcher + initial loader for "Today's Progress"
     database.ref().on("child_added", function(snapshot) {
-        
-        var studentName = snapshot.key;
-        var bx1 = snapshot.val().behavior1;
-        var bx2 = snapshot.val().behavior2;
-        var bx3 = snapshot.val().behavior3;
-        var met1 = snapshot.val().behavior1.met;
-        var met2 = snapshot.val().behavior2.met;
-        var met3 = snapshot.val().behavior3.met;
-        var tracked1 = snapshot.val().behavior1.tracked;
-        var tracked2 = snapshot.val().behavior2.tracked;
-        var tracked3 = snapshot.val().behavior3.tracked;
-
-        studentList.push({
-            studentName,
-            bx1,
-            bx2,
-            bx3,
-            met1,
-            met2,
-            met3,
-            tracked1,
-            tracked2,
-            tracked3
-        });
-        
-        console.log(studentList);
-        
-        
-        //Creates an array of all students in the database in both compressed and uncompressed versions
+        console.log(snapshot.key);
         studentArray.push(snapshot.key);
+        //console.log(studentArray);
         studentArrayCompressed.push(snapshot.key.replace(/\s+/g, ''));
-
-        
-        //Create an array of all behaviors in the database
-        var item = snapshot.val().behavior1.behavior;
-        bxArray.push(item);
-        var item = snapshot.val().behavior2.behavior;
-        bxArray.push(item);
-        var item = snapshot.val().behavior3.behavior;
-        bxArray.push(item);
-        console.log("bxArray: " + bxArray);
-        
-        
-        //Create an array of all behaviors in the database linked to student
-        //One behavior exists
-
-        //Create an array of all behaviors in the database linked to student with no spaces
-        bxArrayLinkedtoStudentCompressed.push(snapshot.key.replace(/\s+/g, '') + snapshot.val().behavior1.behavior.replace(/\s+/g, ''));
-
-        if (snapshot.numBehaviors === 2){
-            bxArrayLinkedtoStudentCompressed.push(snapshot.key.replace(/\s+/g, '') + snapshot.val().behavior2.behavior.replace(/\s+/g, ''));
-        }
-        if (snapshot.numBehaviors === 3){
-            bxArrayLinkedtoStudentCompressed.push(snapshot.key.replace(/\s+/g, '') + snapshot.val().behavior2.behavior.replace(/\s+/g, ''));
-            bxArrayLinkedtoStudentCompressed.push(snapshot.key.replace(/\s+/g, '') + snapshot.val().behavior3.behavior.replace(/\s+/g, ''));        
-        }
 
         //Appends current values to the page
         //Code to append data for just one behavior
         if (snapshot.val().numBehaviors === 1) {
+            var studentName = snapshot.key;
+            //console.log(studentName);
+            var bx1 = snapshot.val().behavior1.behavior;
+            //console.log(bx1);
+            var met1 = snapshot.val().behavior1.met;
+            console.log(met1);
+            var tracked1 = snapshot.val().behavior1.tracked;
+            console.log(tracked1);
+            var percent1 = Math.floor((met1/tracked1)*100);
+            console.log(percent1);
+
+            studentList.push({
+                studentName,
+                bx1,
+                met1,
+                tracked1,
+                percent1
+            });
+            
+            console.log(studentList);
+
             //create keys from student data, remove all spaces
-            var stKey = snapshot.key;
+            stKey = snapshot.key;
             stKey = stKey.replace(/\s+/g, '');
-            var bx1Key = snapshot.val().behavior1.behavior;
+            bx1Key = snapshot.val().behavior1.behavior;
             bx1Key = bx1Key.replace(/\s+/g, '');
 
             $('#well').append(
                 `<tr id="${snapshot.key}">
                     <td>${snapshot.key}</td>
                     <td>${snapshot.val().behavior1.behavior}</td>
-                    <td></td>
                 <tr>`
             )
 
             $('#bxRatings').append(
                 `<div class="form-group">
                     <h4>${snapshot.key}</h4> 
-                    <label for="${stKey}">${snapshot.val().behavior1.behavior}</label>
-                    <select class="form-control" id="${stKey}">
+                    <label for="${stKey}${bx1Key}">${snapshot.val().behavior1.behavior}</label>
+                    <select class="form-control" id="${stKey}${bx1Key}">
                         <option class="form-control" type="text" disabled selected>Choose...</option>
                         <option value='1'>Met</option>
                         <option value='0'>Did Not Meet</option>
@@ -278,24 +247,47 @@ $(document).ready(function() {
         }
         //Code to append data for two behaviors
         else if (snapshot.val().numBehaviors === 2) {
+            var studentName = snapshot.key;
+            //console.log(studentName);
+            var bx1 = snapshot.val().behavior1.behavior;
+            //console.log(bx1);
+            var met1 = snapshot.val().behavior1.met;
+            //console.log(met1);
+            var tracked1 = snapshot.val().behavior1.tracked;
+            //console.log(tracked1);
+            var bx2 = snapshot.val().behavior2.behavior;
+            //console.log(bx2);
+            var met2 = snapshot.val().behavior2.met;
+            //console.log(met2);
+            var tracked2 = snapshot.val().behavior2.tracked;
+            //console.log(tracked2);
+
+            studentList.push({
+                studentName,
+                bx1,
+                met1,
+                tracked1,
+                bx2,
+                met2,
+                tracked2
+            });
+        
             //create keys from student data, remove all spaces
-            var stKey = snapshot.key;
+            stKey = snapshot.key;
             stKey = stKey.replace(/\s+/g, '');
-            var bx1Key = snapshot.val().behavior1.behavior;
+            bx1Key = snapshot.val().behavior1.behavior;
             bx1Key = bx1Key.replace(/\s+/g, '');
-            var bx2Key = snapshot.val().behavior2.behavior;
+            bx2Key = snapshot.val().behavior2.behavior;
             bx2Key = bx2Key.replace(/\s+/g, '');
 
             $('#well').append(
                 `<tr id="${snapshot.key}">
                     <td>${snapshot.key}</td>
                     <td>${snapshot.val().behavior1.behavior}</td>
-                    <td></td>
                 <tr>
                 <tr id="${snapshot.key}">
                     <td>${snapshot.key}</td>
                     <td>${snapshot.val().behavior2.behavior}</td>
-                    <td></td>
                 <tr>`
             )
 
@@ -321,32 +313,62 @@ $(document).ready(function() {
         }
         //Code to append data for three behaviors
         else if (snapshot.val().numBehaviors === 3) {
-            //create keys from student data, remove all spaces
+            var studentName = snapshot.key;
+            //console.log(studentName);
+            var bx1 = snapshot.val().behavior1.behavior;
+            //console.log(bx1);
+            var met1 = snapshot.val().behavior1.met;
+            //console.log(met1);
+            var tracked1 = snapshot.val().behavior1.tracked;
+            //console.log(tracked1);
+            var bx2 = snapshot.val().behavior2.behavior;
+            //console.log(bx2);
+            var met2 = snapshot.val().behavior2.met;
+            //console.log(met2);
+            var tracked2 = snapshot.val().behavior2.tracked;
+            //console.log(tracked2);
+            var bx3 = snapshot.val().behavior3.behavior;
+            //console.log(bx3);
+            var met3 = snapshot.val().behavior3.met;
+            //console.log(met3);
+            var tracked3 = snapshot.val().behavior3.tracked;
+            //console.log(tracked3);
+
+            studentList.push({
+                studentName,
+                bx1,
+                met1,
+                tracked1,
+                bx2,
+                met2,
+                tracked2,
+                bx3,
+                met3,
+                tracked3
+            });
             
-            var stKey = snapshot.key;
+            //create keys from student data, remove all spaces
+            stKey = snapshot.key;
             stKey = stKey.replace(/\s+/g, '');
-            var bx1Key = snapshot.val().behavior1.behavior;
+            bx1Key = snapshot.val().behavior1.behavior;
             bx1Key = bx1Key.replace(/\s+/g, '');
-            var bx2Key = snapshot.val().behavior2.behavior;
+            bx2Key = snapshot.val().behavior2.behavior;
             bx2Key = bx2Key.replace(/\s+/g, '');
-            var bx3Key = snapshot.val().behavior3.behavior;
+            bx3Key = snapshot.val().behavior3.behavior;
             bx3Key = bx3Key.replace(/\s+/g, '');
 
             $('#well').append(
                 `<tr id="${snapshot.key}">
                     <td>${snapshot.key}</td>
                     <td>${snapshot.val().behavior1.behavior}</td>
-                    <td></td>
                 <tr>
                 <tr id="${snapshot.key}">
                     <td>${snapshot.key}</td>
                     <td>${snapshot.val().behavior2.behavior}</td>
-                    <td></td>
                 <tr>
                 <tr id="${snapshot.key}">
                     <td>${snapshot.key}</td>
                     <td>${snapshot.val().behavior3.behavior}</td>
-                    <td></td>
                 <tr>`
             )
             $('#bxRatings').append(
@@ -375,65 +397,73 @@ $(document).ready(function() {
                     </select>
                 </div>`
             )            
- 
-            }
+        }
         else {
             console.log("Error");
         }
+        
+        for (var i = 0; i < studentArrayCompressed.length; i++) {
+            var currStudent = studentArrayCompressed[i];
+            console.log(currStudent);
+            if (snapshot.key === currStudent);
+            $('#' + currStudent + bx1Key).on('click tap', function(event) {
+                event.preventDefault();
+                console.log("THE BUTTON CLICK OF DESTINY");
+                console.log(currStudent,  "---------&&&&&&&--------");
+                console.log(snapshot.val().behavior1);
+                
+                //Saves the rating
+                var rating = ($(this).val());
+                console.log(rating);
+
+                /*var bx2rating = parseInt($('#' + stKey + bx2Key).val());
+                var bx3rating = parseInt($('#' + stKey + bx3Key).val());*/
+                
+                    //Gets current met and tracked values from Firebase
+                    console.log((snapshot.val().behavior1.met), "THIS IS THE PROBLEM");
+                    met = parseInt(snapshot.val().behavior1.met);
+                    tracked = parseInt(snapshot.val().behavior1.tracked);
+                    var bx = snapshot.val().behavior1;
+                    console.log(met);
+                    console.log(tracked);
+                    console.log(snapshot.key,"-----------------------------------------------------" );
+
+                    //Increments met and tracked appropriately according to rating
+                    if (rating === 1) {
+                        met++;
+                        tracked++;
+                        database.ref(snapshot.key).update({
+                            behavior1: {behavior: bx,
+                                        met: met,
+                                        tracked: tracked}
+                        })
+                    }
+                    else if (rating === 0) {
+                        tracked++;
+                        database.ref(snapshot.key).update({
+                            behavior1: {behavior: bx,
+                                        met: met,
+                                        tracked: tracked}
+                        })
+                    }
+                    else {
+                        console.log("The student was not available to be rated.");
+                    }
+            });
+        };
         // Handle the errors
     }, function(errorObject) {
         console.log("Errors handled: " + errorObject.code);    
     });
 
-    for (var i = 0; i < studentArray; i++) {
-        var currentStudent = studentArray[i];
-        database.ref(currentStudent).on("value", function(snapshot) {
-        
-            //Captures the value of the rating
-            $('#bhvrSaveBtn').on('click tap', function() {
-                //Saves the rating
-                var rating = parseInt($('#stKey').val());
-                //var rating = parseInt($('#JoyfulJodi').val());
-                //Gets current met and tracked values from Firebase
-                met = parseInt(snapshot.val().behavior1.met);
-                tracked = parseInt(snapshot.val().behavior1.tracked);
-                var bx = snapshot.val().behavior1.behavior;
-                //Increments met and tracked appropriately according to rating
-                if (rating === 1) {
-                    met++;
-                    tracked++;
-                    database.ref('Joyful Jodi').update({
-                        behavior1: {behavior: bx,
-                                    met: met,
-                                    tracked: tracked}
-                    })
-                }
-                else if (rating === 0) {
-                    tracked++;
-                    database.ref('Joyful Jodi').update({
-                        behavior1: {behavior: bx,
-                                    met: met,
-                                    tracked: tracked}
-                    })
-                }
-                else {
-                    console.log("The student was not available to be rated.");
-                }
-            });
-        // Handle the errors
-        }, function(errorObject) {
-            console.log("Errors handled: " + errorObject.code);    
-        });    
-    }
-
-    for (var i = 0; i < studentName.length; i++) {
-        //Rewrite the chart for current progress
-        //Get current progress
-    }
-    /*AT THE END OF THE DAY:
+/*  
+We hardcoded the data from the data capture as we have not quite worked it out due to the complexity of the data.
+We will be using a more robust database in future phases, so this was not of great concern at this time.
+    AT THE END OF THE DAY:
     -Either event from moment OR button click to wrap up the day
     -Capture day and percentage and save in chart.js form (like Silly Sarah is now)
-    */
+*/
+
 
     //CHART.JS
 
@@ -445,7 +475,6 @@ $(document).ready(function() {
         createChart(snapshot, 3, 'myChart3');
 
     })
-
     //Function to create a chart
     function createChart(snapshot, bxNum, placementOnPage) {
         //Determines which behavior is being graphed and assigns the requested object to a variable for easier manipulation
@@ -461,7 +490,6 @@ $(document).ready(function() {
             var bxObject = snapshot.val().b3data;
             var bxDescription = snapshot.val().behavior3.behavior;
         }
-
     //Get the keys of the object and store them in an array
     var keys = [];
     for(var key in bxObject) {
@@ -469,11 +497,9 @@ $(document).ready(function() {
             keys.push(key);
         }
     }
-
     //Get the values of the object and store them in an array
     var values = [];
     values = Object.values(bxObject);
-    
     //Create chart for behavior 1
     var ctx = document.getElementById(placementOnPage);
     var myChart = new Chart(ctx, {
@@ -504,4 +530,10 @@ $(document).ready(function() {
         }
         });
     }
+
+    //AJAX Error Warning
+    $(document).ajaxError(function(event, jqxhr, settings, thrownError){
+        $("#warnModalText").html("An error has occured - some information may not be displayed.</br>Error: " + thrownError + "</br>Status: " + jqxhr.status + "</br>" + settings.url);
+         $('#errModal').modal();
+     });
 });
