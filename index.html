@@ -47,16 +47,7 @@
                 <h2>Student Progress Monitoring</h2>
             </div>
             <div id="studentBehavIndicators" class="carousel slide" data-ride="carousel" data-interval="false">
-                <div class="carousel-inner m-auto">
-                    <div class="carousel-item active">
-                        <canvas id="myChart1" width="400" height="400"></canvas>
-                    </div>
-                    <div class="carousel-item">
-                        <canvas id="myChart2" width="400" height="400"></canvas>
-                    </div>
-                    <div class="carousel-item">
-                        <canvas id="myChart3" width="400" height="400"></canvas>
-                    </div>
+                <div class="carousel-inner m-auto" id="addCarouselItem">
                 </div>
                 <a class="carousel-control-prev" href="#studentBehavIndicators" role="button" data-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -105,7 +96,7 @@
                 </form>
                 <button type="button" class="btn btn-primary" id="bxSaveButton">Save changes</button>
                 <br><br>
-                <button type="button" class="btn btn-primary" id="bxRateDay">Click me at the end of the day to save and graph today's progress!</button>
+                <button type="button" class="btn btn-danger" id="bxRateDay">Click me at the END of the day to save today's progress and update graphs!</button>
             </div>
         </div>
 

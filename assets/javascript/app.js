@@ -5,12 +5,11 @@ $(document).ready(function() {
     var errMessage = "";
     var met;
     var tracked;
-    var studentList = [];
-    var eachKey = [];
-    var currentMet;
-    var currentTracked;
     var currentKey;
     var currentProgress;
+    var currDates = [];
+    var currData = [];
+    var allKeys = [];
 
     //API CALLS
 
@@ -106,20 +105,6 @@ $(document).ready(function() {
     getWeather(30506);
 
     // Initialize Firebase
-    /*THIS IS THE TESTER VERSION- MUST BE CHANGED BACK BEFORE ANY PULL REQUESTS!!!
-    var config = {
-        apiKey: "AIzaSyDPE-hUwr7OkDNKYPVZxJkvNdRoJXza8oQ",
-        authDomain: "tester-for-bx-tracking.firebaseapp.com",
-        databaseURL: "https://tester-for-bx-tracking.firebaseio.com",
-        projectId: "tester-for-bx-tracking",
-        storageBucket: "tester-for-bx-tracking.appspot.com",
-        messagingSenderId: "197911738618"
-    };
-    firebase.initializeApp(config);
-    */
-
-    // Initialize Firebase
-    //This is the actual database ref!!!
     var config = {
         apiKey: "AIzaSyBI7PADfav8k7OjpKxN2Otow5smDRuyMNI",
         authDomain: "behavioral-tracking.firebaseapp.com",
@@ -129,7 +114,6 @@ $(document).ready(function() {
         messagingSenderId: "758368700182"
     };
     firebase.initializeApp(config);
-    
 
     //Set database reference
     var database = firebase.database();
@@ -141,7 +125,7 @@ $(document).ready(function() {
         studentName = $('#studentName').val().trim();
         behavior = $('#goal').val().trim();
 
-        //Takes a snapshot of the database to determine whether the student is already in it
+        //Adds student to the database
         database.ref().once('value', function(quicksnapshot) {
             if ((studentName !== '') && (behavior !== '')) {
                 database.ref().push({
@@ -171,6 +155,24 @@ $(document).ready(function() {
     
     // Firebase watcher + initial loader for "Today's Progress"
     database.ref().on("child_added", function(snapshot) {
+        //Add a carousel item with the ID of the current key (needed to display chart)
+        currentKey = snapshot.key;
+        allKeys.push(currentKey);
+        console.log(allKeys);
+        if (allKeys.length === 1) {
+        $('#addCarouselItem').append(
+            `<div class="carousel-item active">
+                <canvas id="${currentKey}" width="400" height="400"></canvas>
+            </div>`
+        );
+        } else {
+            $('#addCarouselItem').append(
+                `<div class="carousel-item">
+                    <canvas id="${currentKey}" width="400" height="400"></canvas>
+                </div>`
+            )
+        }
+
         studentName = snapshot.val().behavior.name;
         //console.log(studentName);
         behavior = snapshot.val().behavior.behavior;
@@ -211,6 +213,7 @@ $(document).ready(function() {
             //console.log("The behavior being tracked is: " + behavior);
             name = snapshot.val().behavior.name;
             //console.log("The student this behavior refers to is: " + name);
+            chartData = snapshot.val().chartData;
 
             //Increments met and tracked appropriately according to rating
             if (rating === "1") {
@@ -224,7 +227,7 @@ $(document).ready(function() {
                                 tracked,
                                 name,
                                 dayProgress: (Math.floor((met/tracked)*100))
-                            }
+                            },
                 })
             }
             else if (rating === "0") {
@@ -238,7 +241,7 @@ $(document).ready(function() {
                                 tracked,
                                 name,
                                 dayProgress: (Math.floor((met/tracked)*100))
-                            }
+                            },
                 })
             }
             else if (rating === 'null') {
@@ -247,82 +250,110 @@ $(document).ready(function() {
             else {
                 console.log("Error");
             }
+            //Necessary in order to update the new values to the page
             location.reload();
         })
-    });
 
-/*  
-We hardcoded the data from the data capture as we have not quite worked it out due to the complexity of the data.
-We will be using a more robust database in future phases, so this was not of great concern at this time.
-    AT THE END OF THE DAY:
-    -Either event from moment OR button click to wrap up the day
-    -Capture day and percentage and save in chart.js form (like Silly Sarah is now)
-*/
-    //CHART.JS
+        $('#bxRateDay').on('click tap', function() {
+            //Retrieve the current values from each database entry
+            met = snapshot.val().behavior.met;
+            //console.log("The database currently states this goal has been met " + met + " times");
+            tracked = snapshot.val().behavior.tracked;
+            //console.log("The database currently states this goal has been tracked " + tracked + " times");
+            currentKey = snapshot.key;
+            //console.log("The database key for the above data is: " + currentKey);
+            behavior = snapshot.val().behavior.behavior;
+            //console.log("The behavior being tracked is: " + behavior);
+            name = snapshot.val().behavior.name;
+            //console.log("The student this behavior refers to is: " + name);
+            dayProgress = snapshot.val().behavior.dayProgress;
+            console.log(dayProgress);
+            
+            var today = moment().format('MM/DD/YYYY HH:mm');
 
-    //Database listener for the charts for a particular student
-    database.ref('Silly Sarah').on('value', function(snapshot) {
-        //Creates chart for each behavior for this student
-        createChart(snapshot, 1, 'myChart1');
-        createChart(snapshot, 2, 'myChart2');
-        createChart(snapshot, 3, 'myChart3');
-
-    })
-    //Function to create a chart
-    function createChart(snapshot, bxNum, placementOnPage) {
-        //Determines which behavior is being graphed and assigns the requested object to a variable for easier manipulation
-        if (bxNum === 1) {
-            var bxObject = snapshot.val().b1data;
-            var bxDescription = snapshot.val().behavior1.behavior;
-        }
-        else if (bxNum === 2) {
-            var bxObject = snapshot.val().b2data;
-            var bxDescription = snapshot.val().behavior2.behavior;
-        }
-        else {
-            var bxObject = snapshot.val().b3data;
-            var bxDescription = snapshot.val().behavior3.behavior;
-        }
-    //Get the keys of the object and store them in an array
-    var keys = [];
-    for(var key in bxObject) {
-        if(bxObject.hasOwnProperty(key)) { //to be safe
-            keys.push(key);
-        }
-    }
-    //Get the values of the object and store them in an array
-    var values = [];
-    values = Object.values(bxObject);
-    //Create chart for behavior 1
-    var ctx = document.getElementById(placementOnPage);
-    var myChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: keys,
-            datasets: [{
-                label: snapshot.key + ': % of day for: ' + bxDescription,
-                data: values,
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero:true,
-                        max: 100
-                    }
-                }]
+            if (!snapshot.val().chartData) {
+                database.ref(currentKey).set({
+                            chartData: {
+                                        date: [today],
+                                        data: [dayProgress]
+                                        }
+                })
+                database.ref(currentKey).update({
+                    behavior: { behavior,
+                                met: 0,
+                                tracked: 0,
+                                name,
+                                dayProgress: 0
+                            }
+                })
             }
-        }
+            else if (snapshot.val().chartData) {
+                //get current date and data arrays and push new values, then set new values
+                currDates = snapshot.val().chartData.date;
+                console.log(currDates);
+                currDates.push(today);
+                console.log(currDates);
+                currData = snapshot.val().chartData.data;
+                currData.push(dayProgress);
+                console.log(currData);
+                database.ref(currentKey).update({
+                    chartData: {
+                                date: currDates,
+                                data: currData
+                                }
+                })
+                database.ref(currentKey).update({
+                    behavior: { behavior,
+                                met: 0,
+                                tracked: 0,
+                                name,
+                                dayProgress: 0
+                            }
+                })
+            }
+            //Required to display updated charts
+            location.reload();
+        })
+
+        //CHART.JS
+       
+        currData = snapshot.val().chartData.data;
+        console.log(currData);
+        currDates = snapshot.val().chartData.date;
+        console.log(currDates);
+        currKey = snapshot.key;
+        console.log(typeof(currKey));
+        //Create chart for behavior
+        //Note that the value for getElementById must come from the dynamically added HTML 
+        var ctx = document.getElementById(currKey).getContext('2d');        
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: currDates,
+                datasets: [{
+                    label: snapshot.val().behavior.name + ': % of day for: ' + snapshot.val().behavior.behavior,
+                    data: currData,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true,
+                            max: 100
+                        }
+                    }]
+                }
+            }
         });
-    }
+    });
 
     //AJAX Error Warning
     $(document).ajaxError(function(event, jqxhr, settings, thrownError){
