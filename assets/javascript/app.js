@@ -75,34 +75,62 @@ $(document).ready(function() {
     };    
     getMoon();
 
-    function getWeather(zip) {
-        //var apiKey = "9098488de48b8a1057b705dbcc308613";
-        var apiKey = "e3e3ed7a89cf8bdd79c4a895a82cb180";  //default key
-        var queryURL = "https://api.openweathermap.org/data/2.5/weather?zip=" + zip + ",us&appid=" + apiKey;
-        //console.log("queryURL: " + queryURL);
+    // OpenWeatherMap API - using HTML5 GeoLocation feature
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition);
+        } else { 
+            errMessage = "Geolocation is not supported by this browser.";   
+            console.log(errMessage);
+            $('#warnModalText').text(errMessage);
+            $('#errModal').modal();
+            errMessage = "";
+            };
+
+    function showPosition(position) {
+        var lat = roundTo((position.coords.latitude),2);
+        var lon = roundTo((position.coords.longitude),2); 
+        // OpenWeatherMap API call
+        var apiKey = "9098488de48b8a1057b705dbcc308613";  //proect-one key
+        var queryURL = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "&appid=" + apiKey; 
+
         $.ajax({
             url: queryURL,
-            method: "GET"
+            method: "GET"   
         })
         .then(function(response) {
             var currCond = "Current Conditions: " + response.weather[0].description;
             $("#conditions").text(currCond);
             var tempK = response.main.temp;
-            // returned temperature is in Kelvin, convert to Fahrenheit
             var tempF = ((tempK - 273.15) * (9/5) + 32);
             tempF = Math.round(tempF);
-            // use degree symbol
             tempF = "Temperature: " + tempF + "&#8457";
             $("#temperature").html(tempF);
             var humdt = "Humidity: " + response.main.humidity + "%";
             $("#humidity").text(humdt);
             var wind = "Wind Speed: " + response.wind.speed + " MPH";
             $("#winds").text(wind);
-            var pres = "Pressure: " + response.main.pressure + " millibars";
-            $("#pressure").text(pres);
+            var pres = roundTo(( response.main.pressure * 0.0295301 ),2);
+            $("#pressure").text("Pressure: " + pres + " inHg");
         });
-    };
-    getWeather(30506);
+    }; 
+
+    function roundTo(n, digits) {
+        var negative = false;
+        if (digits === undefined) {
+            digits = 0;
+        }
+            if( n < 0) {
+            negative = true;
+        n = n * -1;
+        }
+        var multiplicator = Math.pow(10, digits);
+        n = parseFloat((n * multiplicator).toFixed(11));
+        n = (Math.round(n) / multiplicator).toFixed(2);
+        if( negative ) {    
+            n = (n * -1).toFixed(2);
+        }
+        return n;
+    }
 
     // Initialize Firebase
     var config = {
