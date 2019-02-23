@@ -1,5 +1,5 @@
-# Behavioral Data Keeper- Phase 1 (Prototype Phase)
-A Behavioral Tracking Application for whole-interval recording, designed for ease of use and to reduce redundant data entry in many classroom behavioral tracking systems. This application collects data and updates charts in real time to display behavioral trends to help professionals evaluate the effectiveness of behavioral interventions.  Although the app was specifically designed for use with students with severe emotional/behavioral disabilities requiring frequent behavioral monitoring, it can be used by teachers serving any population of students.  Please note that this is a prototype for further development incorporating fictitious data and does NOT incorporate security measures to protect student data.  Please do NOT use this version to store any real student data.
+# Behavioral Data Tracker v.1 (Prototype Phase)
+A Behavioral Tracking Application for whole-interval recording, designed for ease of use and to reduce redundant data entry in many classroom behavioral tracking systems. This application collects data and updates charts in real time to display behavioral trends to help professionals evaluate the effectiveness of behavioral interventions.  Although the app was specifically designed for use with students with severe emotional/behavioral disabilities requiring frequent behavioral monitoring, it can be used by teachers serving any population of students.  Please note that this is a prototype for further development incorporating fictitious data and does NOT incorporate security measures to protect student data.  Please do NOT use this version to store any real student data.  The developers are not responsible for the misuse of this application.
 
 ## Developed by: Sarah Kinneer, Billy Sterling, and Jodi Woodard
 ## January, 2019
@@ -20,7 +20,7 @@ HTML5, CSS3, Bootstrap, JavaScript, jQuery, Firebase, Moment.js, Chart.js, Modal
 - Users can use the left and right arrows at any time to navigate through the carousel and view each student's behavior chart.
 
 ## Future Development:
-- There are plans to develop this application further, including using a more robust database, adding additional behavioral monitoring features (such as student self-monitoring, frequency counts, duration recording, random instance recording, etc.), and adding security measures to insure that student data is protected per FERPA regulations.
+- There are plans to develop this application further, including using a more robust database, adding additional behavioral monitoring features (such as student self-monitoring, frequency counts, duration recording, random instance recording, etc.), and adding security measures to ensure that student data is protected per FERPA regulations.
 
 ## Sources:
 Many thanks to the creators of the They Said So, Farm Sense, Jokes One, and Open Weather APIs!
