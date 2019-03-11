@@ -25,19 +25,19 @@ $(document).ready(function() {
     }
     getQuote();
 
-    //API call for Joke of the Day
-    function getJoke() {
-        var queryURL = "https://api.jokes.one/jod";
-        $.ajax({
-            url: queryURL,
-            method: "GET"
-        })
-        .then(function(response) {
-            var joke = response.contents.jokes[0].joke.text;
-            $("#joke").text(joke);
-        });
-    };
-    getJoke();
+    // //API call for Joke of the Day- THIS API is no longer available
+    // function getJoke() {
+    //     var queryURL = "https://api.jokes.one/jod";
+    //     $.ajax({
+    //         url: queryURL,
+    //         method: "GET"
+    //     })
+    //     .then(function(response) {
+    //         var joke = response.contents.jokes[0].joke.text;
+    //         $("#joke").text(joke);
+    //     });
+    // };
+    // getJoke();
 
     //API call for Farm Sense- uses UNIX timestamp
     function getMoon() {
