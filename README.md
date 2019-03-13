@@ -10,7 +10,7 @@ A Behavioral Tracking Application for whole-interval recording, designed for eas
 HTML5, CSS3, Bootstrap, JavaScript, jQuery, Firebase, Moment.js, Chart.js, Modals, They Said So API (quote of the day), Farm Sense API (moon phases), Jokes One API (joke of the day), Open Weather API (current weather)
 
 ## Link to Live Site:
-- [Log some (fictional) data!](https://kinneers.github.io/project-one) - Head to the live site and play with the app!
+- [Log some (fictional) data!](https://kinneers.github.io/bdt_v1) - Head to the live site and play with the app!
 
 ## To Use the Live Site:
 - To enter a new student/behavior, simply use the form at the bottom of the browser to add the student's name and target behavior.
